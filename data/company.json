@@ -1,0 +1,52 @@
+{
+  "company": "Nimbus Labs (fictional)",
+  "groups": ["all_staff", "marketing", "engineering", "hr", "finance", "leadership"],
+  "users": [
+    {"id": "riya",   "name": "Riya Shah",    "role": "Marketing Intern", "groups": ["all_staff", "marketing"]},
+    {"id": "arjun",  "name": "Arjun Rao",    "role": "Backend Engineer", "groups": ["all_staff", "engineering"]},
+    {"id": "meera",  "name": "Meera Iyer",   "role": "HR Manager",       "groups": ["all_staff", "hr"]},
+    {"id": "kabir",  "name": "Kabir Mehta",  "role": "CFO",              "groups": ["all_staff", "finance", "leadership"]},
+    {"id": "ananya", "name": "Ananya Desai", "role": "CEO",              "groups": ["all_staff", "leadership", "hr", "finance"]}
+  ],
+  "documents": [
+    {"id": "wiki-handbook", "title": "Employee Handbook", "department": "wiki", "updated_at": "2026-04-01", "sections": [
+      {"section": "Leave policy", "acl": ["all_staff"], "content": "Employees get 24 days of paid leave per year. Up to 8 unused days carry forward to the next year. Leave requests go through the HR portal at least one week in advance."},
+      {"section": "Working hours", "acl": ["all_staff"], "content": "Core hours are 11:00 to 16:00 IST. Outside core hours, teams set their own schedules."},
+      {"section": "Remote work", "acl": ["all_staff"], "content": "Employees may work remotely up to three days a week with manager approval."}
+    ]},
+    {"id": "wiki-orgchart", "title": "Org Chart", "department": "wiki", "updated_at": "2026-05-10", "sections": [
+      {"section": "Marketing team", "acl": ["all_staff"], "content": "The marketing team has three members: Neha Kapoor (Marketing Lead), Riya Shah (Marketing Intern) and Dev Malhotra (Content Specialist)."},
+      {"section": "Engineering team", "acl": ["all_staff"], "content": "Engineering is led by Vikram Nair. Arjun Rao and Sara Thomas are backend engineers working on Project Atlas."}
+    ]},
+    {"id": "wiki-announcements", "title": "Company Announcements", "department": "wiki", "updated_at": "2026-04-15", "sections": [
+      {"section": "Salary revision", "acl": ["all_staff"], "content": "Following the annual review cycle, every member of the marketing team received a 10% salary revision effective April 2026."}
+    ]},
+    {"id": "wiki-atlas", "title": "Project Atlas", "department": "wiki", "updated_at": "2026-06-01", "sections": [
+      {"section": "Overview", "acl": ["all_staff"], "content": "Project Atlas is our analytics platform for retail clients. It launches for the first client in Q3."},
+      {"section": "Architecture", "acl": ["engineering"], "content": "Atlas runs on FastAPI services behind an Nginx gateway, with Postgres for transactional data and ClickHouse for analytics queries. Events flow through Kafka."},
+      {"section": "Client pricing appendix", "acl": ["finance", "leadership"], "content": "Atlas is priced to Zenith Retail at INR 4.2 crore per year with a 15% discount in year one. The minimum acceptable price for future clients is INR 3 crore."}
+    ]},
+    {"id": "hr-compensation", "title": "Compensation Register 2026", "department": "hr", "updated_at": "2026-04-05", "sections": [
+      {"section": "Marketing salaries", "acl": ["hr", "leadership"], "content": "Neha Kapoor: INR 24 lakh per year. Dev Malhotra: INR 11 lakh per year. Riya Shah (intern stipend): INR 35,000 per month."},
+      {"section": "Engineering salaries", "acl": ["hr", "leadership"], "content": "Vikram Nair: INR 48 lakh per year. Arjun Rao: INR 18 lakh per year. Sara Thomas: INR 19 lakh per year."}
+    ]},
+    {"id": "hr-reviews", "title": "Performance Reviews H1 2026", "department": "hr", "updated_at": "2026-07-01", "sections": [
+      {"section": "Dev Malhotra", "acl": ["hr"], "content": "Dev Malhotra has been placed on a 60-day performance improvement plan due to missed content deadlines."}
+    ]},
+    {"id": "hr-recruitment", "title": "Recruitment Policy", "department": "hr", "updated_at": "2026-02-20", "sections": [
+      {"section": "Hiring process", "acl": ["all_staff"], "content": "Every hire goes through a screening call, a technical or portfolio round, and a culture round. Referrals are encouraged."},
+      {"section": "Offer approval limits", "acl": ["hr"], "content": "HR managers can approve offers up to INR 20 lakh. Offers above that need CFO approval."}
+    ]},
+    {"id": "fin-budget", "title": "FY2026-27 Budget", "department": "finance", "updated_at": "2026-03-28", "sections": [
+      {"section": "Marketing budget summary", "acl": ["finance", "leadership", "marketing"], "content": "The marketing budget for FY2026-27 is INR 1.8 crore, split across events, paid campaigns and content."},
+      {"section": "Engineering budget", "acl": ["finance", "leadership"], "content": "The engineering budget for FY2026-27 is INR 6.5 crore, including INR 1.2 crore for cloud infrastructure."},
+      {"section": "Revenue forecast", "acl": ["leadership"], "content": "Projected FY2026-27 revenue is INR 38 crore, with Project Atlas expected to contribute INR 9 crore."}
+    ]},
+    {"id": "fin-deals", "title": "Strategic Deals", "department": "finance", "updated_at": "2026-08-12", "sections": [
+      {"section": "Acquisition talks", "acl": ["leadership"], "content": "The board is in confidential talks to acquire CloudKite for about INR 60 crore. Target close is December 2026."}
+    ]},
+    {"id": "fin-drafts", "title": "Unreviewed Draft", "department": "finance", "updated_at": "2026-09-01", "sections": [
+      {"section": "Draft notes", "acl": [], "content": "Draft layoff scenarios for FY2027. Not reviewed. No access groups assigned yet."}
+    ]}
+  ]
+}
