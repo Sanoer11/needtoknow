@@ -1,0 +1,9 @@
+services:
+  db:
+    image: pgvector/pgvector:pg16
+    environment:
+      POSTGRES_USER: permit
+      POSTGRES_PASSWORD: permit
+      POSTGRES_DB: needtoknow
+    ports:
+      - "5432:5432"
