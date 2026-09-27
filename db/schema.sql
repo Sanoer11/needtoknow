@@ -32,8 +32,12 @@ CREATE TABLE chunks (
     doc_id    TEXT REFERENCES documents(id) ON DELETE CASCADE,
     section   TEXT NOT NULL,
     content   TEXT NOT NULL,
-    embedding vector(384)          -- the meaning of the text, as 384 numbers
+    embedding vector(384),         -- the meaning of the text, as 384 numbers
+    tsv       tsvector GENERATED ALWAYS AS
+              (to_tsvector('english', section || ' ' || content)) STORED   -- keywords, for keyword search
 );
+
+CREATE INDEX chunks_tsv_idx ON chunks USING GIN (tsv);
 
 -- Which groups may read which chunk. No rows = nobody can read it (deny by default).
 CREATE TABLE chunk_acl (
