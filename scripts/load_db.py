@@ -1,15 +1,18 @@
 import json
 
 import psycopg
+from pgvector.psycopg import register_vector                     # NEW
+from sentence_transformers import SentenceTransformer            # NEW
 
 DB_URL = "postgresql://permit:permit@localhost:5432/needtoknow"
 
 company = json.load(open("data/company.json"))
+model = SentenceTransformer("BAAI/bge-small-en-v1.5")            # NEW
 
 with psycopg.connect(DB_URL, autocommit=True) as conn:
-    # Start fresh every run, so the script can be re-run safely
     conn.execute("DROP TABLE IF EXISTS chunk_acl, chunks, documents, user_groups, groups, users CASCADE")
     conn.execute(open("db/schema.sql").read())
+    register_vector(conn)          # NEW: must come AFTER the schema creates the extension
 
     for g in company["groups"]:
         conn.execute("INSERT INTO groups (id) VALUES (%s)", (g,))
@@ -23,10 +26,16 @@ with psycopg.connect(DB_URL, autocommit=True) as conn:
     for d in company["documents"]:
         conn.execute("INSERT INTO documents (id, title, department, updated_at) VALUES (%s, %s, %s, %s)",
                      (d["id"], d["title"], d["department"], d["updated_at"]))
-        for s in d["sections"]:
+
+        # NEW: embed all sections of this document in one batch
+        texts = [f"{d['title']} - {s['section']}: {s['content']}" for s in d["sections"]]
+        vectors = model.encode(texts, normalize_embeddings=True)
+
+        for s, vec in zip(d["sections"], vectors):
             chunk_id = conn.execute(
-                "INSERT INTO chunks (doc_id, section, content) VALUES (%s, %s, %s) RETURNING id",
-                (d["id"], s["section"], s["content"]),
+                "INSERT INTO chunks (doc_id, section, content, embedding) "
+                "VALUES (%s, %s, %s, %s) RETURNING id",
+                (d["id"], s["section"], s["content"], vec),
             ).fetchone()[0]
             for g in s["acl"]:
                 conn.execute("INSERT INTO chunk_acl (chunk_id, group_id) VALUES (%s, %s)", (chunk_id, g))

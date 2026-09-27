@@ -1,5 +1,7 @@
 -- NeedToKnow schema (Step 2)
 
+CREATE EXTENSION IF NOT EXISTS vector;
+
 CREATE TABLE users (
     id    TEXT PRIMARY KEY,          -- e.g. 'riya'
     name  TEXT NOT NULL,
@@ -26,10 +28,11 @@ CREATE TABLE documents (
 
 -- One row per section. This is the unit we search and protect.
 CREATE TABLE chunks (
-    id      SERIAL PRIMARY KEY,
-    doc_id  TEXT REFERENCES documents(id) ON DELETE CASCADE,
-    section TEXT NOT NULL,
-    content TEXT NOT NULL
+    id        SERIAL PRIMARY KEY,
+    doc_id    TEXT REFERENCES documents(id) ON DELETE CASCADE,
+    section   TEXT NOT NULL,
+    content   TEXT NOT NULL,
+    embedding vector(384)          -- the meaning of the text, as 384 numbers
 );
 
 -- Which groups may read which chunk. No rows = nobody can read it (deny by default).
