@@ -3,7 +3,7 @@ import sys
 import psycopg
 
 from auth import issue_token
-from secure_search import DB_URL
+from config import DB_URL
 
 user_id = sys.argv[1]
 

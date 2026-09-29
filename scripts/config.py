@@ -1,0 +1,1 @@
+DB_URL = "postgresql://permit:permit@localhost:5432/needtoknow"
