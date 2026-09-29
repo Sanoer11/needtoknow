@@ -18,31 +18,33 @@ CAN_READ = """
     )"""
 
 
-def vector_search(conn, user, question, k=5, unsafe=False):
+def vector_search(conn, user, question, k=5, unsafe=False, department=None):
     lock = "TRUE" if unsafe else CAN_READ
     qvec = model.encode(QUERY_PREFIX + question, normalize_embeddings=True)
     return conn.execute(f"""
         SELECT c.id, d.title, c.section, 1 - (c.embedding <=> %(qvec)s) AS score
         FROM chunks c JOIN documents d ON d.id = c.doc_id
         WHERE {lock}
+          AND (%(dept)s::text IS NULL OR d.department = %(dept)s)
         ORDER BY c.embedding <=> %(qvec)s
-        LIMIT %(k)s""", {"user": user, "qvec": qvec, "k": k}).fetchall()
+        LIMIT %(k)s""", {"user": user, "qvec": qvec, "k": k, "dept": department}).fetchall()
 
 
-def keyword_search(conn, user, question, k=5, unsafe=False):
+def keyword_search(conn, user, question, k=5, unsafe=False, department=None):
     lock = "TRUE" if unsafe else CAN_READ
     return conn.execute(f"""
         SELECT c.id, d.title, c.section, ts_rank(c.tsv, q) AS score
         FROM chunks c JOIN documents d ON d.id = c.doc_id,
              websearch_to_tsquery('english', %(question)s) q
         WHERE c.tsv @@ q AND {lock}
+          AND (%(dept)s::text IS NULL OR d.department = %(dept)s)
         ORDER BY score DESC
-        LIMIT %(k)s""", {"user": user, "question": question, "k": k}).fetchall()
+        LIMIT %(k)s""", {"user": user, "question": question, "k": k, "dept": department}).fetchall()
 
 
-def hybrid_search(conn, user, question, k=5, rrf_k=60, unsafe=False):
+def hybrid_search(conn, user, question, k=5, rrf_k=60, unsafe=False, department=None):
     scores, info = {}, {}
-    for results in (vector_search(conn, user, question, 20, unsafe),keyword_search(conn, user, question, 20, unsafe)):
+    for results in (vector_search(conn, user, question, 20, unsafe, department),keyword_search(conn, user, question, 20, unsafe, department)):
         for rank, (chunk_id, title, section, _) in enumerate(results, start=1):
             scores[chunk_id] = scores.get(chunk_id, 0) + 1 / (rrf_k + rank)
             info[chunk_id] = (title, section)
