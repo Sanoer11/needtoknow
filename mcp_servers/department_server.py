@@ -46,7 +46,11 @@ def search(question: str) -> list[dict]:
     with psycopg.connect(DB_URL) as conn:
         register_vector(conn)
         rows = hybrid_search(conn, user, question, k=5, department=DEPARTMENT)
-    return [{"title": t, "section": s, "score": round(score, 4)} for _, t, s, score in rows]
+        # ids come ONLY from the permission-locked search above, so fetching their text is safe
+        texts = dict(conn.execute("SELECT id, content FROM chunks WHERE id = ANY(%s)",
+                                  ([r[0] for r in rows],)).fetchall())
+    return [{"title": t, "section": s, "content": texts[cid], "score": round(score, 4)}
+            for cid, t, s, score in rows]
 
 
 if __name__ == "__main__":
