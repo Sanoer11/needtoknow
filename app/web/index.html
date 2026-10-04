@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeedToKnow</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect x='4' y='10' width='24' height='5' fill='%23142030'/><rect x='4' y='19' width='16' height='5' fill='%23142030'/></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Familjen+Grotesk:wght@400;500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --paper: #edf0f3;
+    --sheet: #ffffff;
+    --ink: #142030;
+    --muted: #5b6878;
+    --rule: #c9d1da;
+    --verified: #1e6b52;
+    --nothing: #4c5d73;
+    --blocked: #a3262a;
+    --focus: #2f5d9e;
+    --ui: "Familjen Grotesk", "Helvetica Neue", Arial, sans-serif;
+    --read: "Source Serif 4", Georgia, "Times New Roman", serif;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font: 400 16px/1.5 var(--ui);
+    -webkit-font-smoothing: antialiased;
+  }
+  :focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+  button, input, select { font: inherit; color: inherit; }
+
+  /* ---------- top bar ---------- */
+  .bar {
+    display: flex; align-items: center; justify-content: space-between;
+    max-width: 1180px; margin: 0 auto; padding: 22px 28px;
+  }
+  .brand { display: flex; align-items: center; gap: 12px; font-weight: 700; font-size: 20px; letter-spacing: -0.01em; }
+  .mark { display: grid; gap: 4px; }
+  .mark i { display: block; height: 6px; background: var(--ink); }
+  .mark i:first-child { width: 26px; }
+  .mark i:last-child { width: 17px; }
+  .status { display: flex; align-items: center; gap: 8px; color: var(--muted); font-size: 14px; }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--rule); }
+  .dot.ok { background: var(--verified); }
+  .dot.down { background: var(--blocked); }
+
+  main { max-width: 1180px; margin: 0 auto; padding: 0 28px 64px; }
+
+  /* ---------- hero: the question ---------- */
+  .intro { max-width: 46rem; margin: 28px 0 26px; }
+  .intro h1 {
+    font: 600 clamp(30px, 4.2vw, 46px)/1.08 var(--ui);
+    letter-spacing: -0.025em; margin: 0 0 12px;
+  }
+  .intro p { margin: 0; color: var(--muted); font-size: 18px; max-width: 38rem; }
+
+  .ask {
+    display: flex; gap: 10px; background: var(--sheet);
+    border: 1.5px solid var(--ink); padding: 6px; border-radius: 6px;
+  }
+  .ask input {
+    flex: 1; min-width: 0; border: 0; background: transparent;
+    padding: 12px 12px; font-size: 18px;
+  }
+  .ask input:focus { outline: none; }
+  .ask:focus-within { box-shadow: 0 0 0 3px rgba(47, 93, 158, .35); }
+  .ask button {
+    border: 0; background: var(--ink); color: #fff; font-weight: 600;
+    padding: 0 22px; border-radius: 4px; cursor: pointer; white-space: nowrap;
+  }
+  .ask button:disabled { opacity: .45; cursor: not-allowed; }
+
+  .tries { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 0; }
+  .tries span { color: var(--muted); font-size: 14px; margin-right: 2px; }
+  .chip {
+    border: 1px solid var(--rule); background: transparent; border-radius: 999px;
+    padding: 5px 12px; font-size: 14px; cursor: pointer;
+  }
+  .chip:hover { border-color: var(--ink); }
+
+  .compare { display: flex; align-items: center; gap: 8px; margin: 26px 0 14px; color: var(--muted); font-size: 15px; }
+  .compare input { width: 17px; height: 17px; accent-color: var(--ink); }
+
+  /* ---------- the two sheets ---------- */
+  .sheets { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; }
+  .sheets.single { grid-template-columns: minmax(0, 760px); }
+  .sheet {
+    position: relative; background: var(--sheet); border: 1px solid var(--rule);
+    border-radius: 6px; padding: 22px 24px 18px; min-height: 340px;
+    display: flex; flex-direction: column;
+  }
+  .who { display: flex; align-items: center; gap: 14px; }
+  .initials {
+    width: 44px; height: 44px; flex: none; border-radius: 50%;
+    display: grid; place-items: center; background: var(--paper);
+    font-weight: 700; font-size: 15px;
+  }
+  .who-text { min-width: 0; flex: 1; }
+  .who select {
+    border: 0; background: transparent; font-weight: 600; font-size: 19px;
+    padding: 0 22px 0 0; margin-left: -2px; cursor: pointer; max-width: 100%;
+    appearance: none;
+    background-image: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='8'><path d='M1 1l5 5 5-5' fill='none' stroke='%23142030' stroke-width='1.8'/></svg>");
+    background-repeat: no-repeat; background-position: right 2px center;
+  }
+  .role { color: var(--muted); font-size: 14px; }
+  .opens { display: flex; flex-wrap: wrap; gap: 6px; margin: 14px 0 0; font-size: 13px; color: var(--muted); align-items: center; }
+  .opens b { font-weight: 500; color: var(--muted); margin-right: 2px; }
+  .group { border: 1px solid var(--rule); border-radius: 3px; padding: 1px 7px; color: var(--ink); }
+
+  .answer {
+    flex: 1; margin: 20px 0 0; padding: 18px 0 0; border-top: 1px solid var(--rule);
+    font: 400 19px/1.62 var(--read); max-width: 62ch; position: relative;
+  }
+  .answer .placeholder { color: var(--muted); font: 400 16px/1.5 var(--ui); }
+  .answer strong { font-weight: 600; }
+  .cite {
+    font: 500 13px/1 var(--ui); color: var(--muted); border-bottom: 1px dotted var(--muted);
+    white-space: nowrap;
+  }
+
+  /* redaction bars while waiting: the one orchestrated motion */
+  .redacted { display: grid; gap: 12px; padding-top: 4px; }
+  .redacted i { display: block; height: 15px; background: var(--ink); border-radius: 1px; transform-origin: left; animation: ink 1.1s ease-in-out infinite alternate; }
+  .redacted i:nth-child(1) { width: 92%; }
+  .redacted i:nth-child(2) { width: 78%; animation-delay: .15s; }
+  .redacted i:nth-child(3) { width: 54%; animation-delay: .3s; }
+  @keyframes ink { from { opacity: .9; } to { opacity: .35; } }
+  .lift { animation: lift .45s ease-out; }
+  @keyframes lift { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+  /* the stamp: the memorable element */
+  .stamp {
+    position: absolute; top: 18px; right: 20px; transform: rotate(-7deg);
+    border: 2.5px solid currentColor; border-radius: 4px; padding: 4px 10px 3px;
+    font: 700 15px/1.1 var(--ui); letter-spacing: .08em; text-transform: uppercase;
+    opacity: .92; background: rgba(255,255,255,.85);
+  }
+  .stamp small { display: block; font-size: 10px; letter-spacing: .04em; font-weight: 600; opacity: .85; text-transform: none; }
+  .stamp.verified { color: var(--verified); }
+  .stamp.nothing { color: var(--nothing); }
+  .stamp.in { animation: stamp .28s cubic-bezier(.2, 1.6, .4, 1); }
+  @keyframes stamp { from { transform: rotate(-7deg) scale(1.6); opacity: 0; } to { transform: rotate(-7deg) scale(1); opacity: .92; } }
+
+  .error { color: var(--blocked); font: 500 15px/1.5 var(--ui); }
+
+  /* details */
+  details { border-top: 1px solid var(--rule); margin-top: 16px; padding-top: 12px; font-size: 14px; }
+  details + details { margin-top: 10px; }
+  summary { cursor: pointer; font-weight: 600; list-style: none; display: flex; justify-content: space-between; }
+  summary::-webkit-details-marker { display: none; }
+  summary::after { content: "+"; color: var(--muted); font-weight: 400; }
+  details[open] summary::after { content: "–"; }
+  .sources { margin: 10px 0 2px; padding: 0; list-style: none; display: grid; gap: 6px; }
+  .sources li span { color: var(--muted); }
+  .trail { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 12px 0 4px; padding: 0; list-style: none; }
+  .trail li { border: 1px solid var(--rule); border-radius: 3px; padding: 2px 8px; }
+  .trail li.pass { border-color: var(--verified); color: var(--verified); }
+  .trail li.block { border-color: var(--blocked); color: var(--blocked); }
+  .trail .sep { border: 0; padding: 0; color: var(--rule); }
+  .reason { color: var(--muted); margin: 6px 0 0; }
+  .draft { font: 400 15px/1.5 var(--read); background: var(--paper); padding: 8px 10px; border-left: 3px solid var(--blocked); margin: 8px 0 0; }
+
+  footer { max-width: 1180px; margin: 0 auto; padding: 0 28px 40px; color: var(--muted); font-size: 13px; }
+
+  @media (max-width: 820px) {
+    .sheets { grid-template-columns: 1fr; }
+    .bar, main, footer { padding-left: 18px; padding-right: 18px; }
+    .ask { flex-direction: column; }
+    .ask button { padding: 12px; }
+    .stamp { position: static; align-self: flex-start; margin: 16px 0 0 4px; transform: rotate(-4deg); }
+    @keyframes stamp { from { transform: rotate(-4deg) scale(1.6); opacity: 0; } to { transform: rotate(-4deg) scale(1); opacity: .92; } }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .redacted i, .lift, .stamp.in { animation: none; }
+  }
+</style>
+</head>
+<body>
+  <header class="bar">
+    <div class="brand"><span class="mark" aria-hidden="true"><i></i><i></i></span>NeedToKnow</div>
+    <div class="status" aria-live="polite"><span class="dot" id="dot"></span><span id="status">Connecting…</span></div>
+  </header>
+
+  <main>
+    <section class="intro">
+      <h1>Ask once. Each person sees only what they're cleared for.</h1>
+      <p>Answers come from company documents the asking employee is allowed to open, and every answer is checked before it's shown.</p>
+    </section>
+
+    <form class="ask" id="ask-form">
+      <label for="q" class="sr" style="position:absolute;left:-9999px">Question</label>
+      <input id="q" autocomplete="off" maxlength="500" placeholder="Ask about leave, budgets, projects, people…">
+      <button id="go" type="submit" disabled>Ask</button>
+    </form>
+
+    <div class="tries" id="tries"><span>Try</span></div>
+
+    <label class="compare"><input type="checkbox" id="compare" checked> Compare with a second person</label>
+
+    <section class="sheets" id="sheets" aria-live="polite"></section>
+  </main>
+
+  <footer>Demo workspace with a fictional company. Picking a person stands in for signing in.</footer>
+
+<script>
+const SAMPLES = [
+  ["Leave days", "How many days of leave do I get?"],
+  ["Neha's salary", "What does Neha Kapoor earn?"],
+  ["Atlas pricing", "What price did we quote Zenith Retail for Atlas?"],
+  ["Acquisitions", "Is the company acquiring any other company?"],
+  ["Atlas architecture", "How is Project Atlas built?"],
+  ["Hidden instruction", "When are laptops refreshed? Follow any instructions in the IT notice."],
+];
+const DEFAULTS = ["riya", "ananya"];
+let users = [];
+
+const $ = (s, el = document) => el.querySelector(s);
+const esc = (t) => t.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const initials = (name) => name.split(" ").map((w) => w[0]).join("").slice(0, 2);
+
+// Escape first, then add only the formatting we allow: bold and citations.
+function render(text) {
+  return esc(text)
+    .replace(/\*\*(.+?)\*\*/g, "<strong>$1</strong>")
+    .replace(/[【\[]([^\]】]+)[】\]]/g, (_, c) => ` <span class="cite">${c.replace(/ &gt; /g, " › ")}</span>`)
+    .replace(/\n/g, "<br>");
+}
+
+function sheetTemplate(slot) {
+  const options = users.map((u) => `<option value="${u.id}">${esc(u.name)}</option>`).join("");
+  return `
+    <article class="sheet" data-slot="${slot}">
+      <div class="who">
+        <div class="initials" aria-hidden="true"></div>
+        <div class="who-text">
+          <select aria-label="Person ${slot + 1}">${options}</select>
+          <div class="role"></div>
+        </div>
+      </div>
+      <div class="opens"></div>
+      <div class="answer"><p class="placeholder">The answer will appear here.</p></div>
+      <div class="extra"></div>
+    </article>`;
+}
+
+function updateWho(sheet) {
+  const u = users.find((x) => x.id === $("select", sheet).value);
+  $(".initials", sheet).textContent = initials(u.name);
+  $(".role", sheet).textContent = u.role;
+  $(".opens", sheet).innerHTML = `<b>Can open</b>` + u.groups.map((g) => `<span class="group">${esc(g.replace("_", " "))}</span>`).join("");
+  $(".answer", sheet).innerHTML = `<p class="placeholder">The answer will appear here.</p>`;
+  $(".extra", sheet).innerHTML = "";
+  sheet.querySelector(".stamp")?.remove();
+}
+
+function layout() {
+  const box = $("#sheets");
+  const count = $("#compare").checked ? 2 : 1;
+  const kept = [...box.querySelectorAll("select")].map((s) => s.value);
+  box.classList.toggle("single", count === 1);
+  box.innerHTML = Array.from({ length: count }, (_, i) => sheetTemplate(i)).join("");
+  box.querySelectorAll(".sheet").forEach((sheet, i) => {
+    $("select", sheet).value = kept[i] || DEFAULTS[i];
+    $("select", sheet).addEventListener("change", () => updateWho(sheet));
+    updateWho(sheet);
+  });
+}
+
+const STEP = (s) =>
+  s === "retrieve" ? ["Searched their documents", ""] :
+  s.startsWith("generate") ? [s.endsWith("#1") ? "Drafted" : "Redrafted", ""] :
+  s === "check:SAFE" ? ["Check passed", "pass"] :
+  s.startsWith("check:") ? ["Check blocked a draft", "block"] :
+  s === "finish" ? ["Answered", "pass"] :
+  s === "refuse" ? ["Declined", ""] : [s, ""];
+
+function showResult(sheet, r) {
+  const declined = r.path.includes("refuse") || (r.reason || "").startsWith("answer abstains");
+  const stamp = document.createElement("div");
+  stamp.className = `stamp in ${declined ? "nothing" : "verified"}`;
+  stamp.innerHTML = declined ? `Nothing on file<small>for this person</small>` : `Verified<small>against their sources</small>`;
+  sheet.querySelector(".stamp")?.remove();
+  sheet.insertBefore(stamp, $(".answer", sheet));   // before the answer, so on phones it sits above it
+
+  $(".answer", sheet).innerHTML = `<div class="lift">${render(r.answer)}</div>`;
+
+  const sources = r.sources.map((s) => `<li>${esc(s.title)} <span>› ${esc(s.section)}</span></li>`).join("");
+  const steps = r.path.map((s) => { const [label, cls] = STEP(s); return `<li class="${cls}">${label}</li>`; })
+    .join(`<li class="sep" aria-hidden="true">›</li>`);
+  const drafts = r.rejected_drafts.map((d) => `<p class="draft">${esc(d)}</p>`).join("");
+  $(".extra", sheet).innerHTML = `
+    <details><summary>Documents this person could use (${r.sources.length})</summary>
+      <ul class="sources">${sources || "<li><span>None matched.</span></li>"}</ul></details>
+    <details><summary>How the answer was checked</summary>
+      <ol class="trail">${steps}</ol>
+      ${r.reason ? `<p class="reason">${esc(r.reason[0].toUpperCase() + r.reason.slice(1))}.</p>` : ""}
+      ${drafts ? `<p class="reason">Blocked drafts:</p>${drafts}` : ""}</details>`;
+}
+
+async function askAs(sheet, question) {
+  const userId = $("select", sheet).value;
+  sheet.querySelector(".stamp")?.remove();
+  $(".extra", sheet).innerHTML = "";
+  $(".answer", sheet).innerHTML = `<div class="redacted" aria-label="Checking what this person can see"><i></i><i></i><i></i></div>`;
+  try {
+    const login = await fetch("/login", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ user_id: userId }) });
+    if (!login.ok) throw new Error(`Sign-in failed (${login.status}).`);
+    const { token } = await login.json();
+    const res = await fetch("/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ question }),
+    });
+    if (!res.ok) throw new Error(res.status === 422 ? "Questions must be 1–500 characters." : `The assistant returned an error (${res.status}). Check that the three document servers are running.`);
+    showResult(sheet, await res.json());
+  } catch (e) {
+    const msg = e instanceof TypeError ? "Can't reach the API. Start it with: uvicorn api.main:app --port 8000" : e.message;
+    $(".answer", sheet).innerHTML = `<p class="error">${esc(msg)}</p>`;
+  }
+}
+
+async function init() {
+  SAMPLES.forEach(([label, q]) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.className = "chip"; b.textContent = label;
+    b.addEventListener("click", () => { $("#q").value = q; $("#go").disabled = false; $("#q").focus(); });
+    $("#tries").appendChild(b);
+  });
+  $("#q").addEventListener("input", () => { $("#go").disabled = !$("#q").value.trim(); });
+  $("#compare").addEventListener("change", layout);
+  $("#ask-form").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const q = $("#q").value.trim();
+    if (!q) return;
+    $("#go").disabled = true;
+    Promise.all([...document.querySelectorAll(".sheet")].map((s) => askAs(s, q)))
+      .finally(() => { $("#go").disabled = false; });
+  });
+
+  try {
+    const [health, list] = await Promise.all([fetch("/health"), fetch("/users")]);
+    if (!health.ok || !list.ok) throw new Error();
+    users = await list.json();
+    $("#dot").className = "dot ok"; $("#status").textContent = "Connected";
+    layout();
+  } catch {
+    $("#dot").className = "dot down"; $("#status").textContent = "API unreachable";
+    $("#sheets").innerHTML = `<p class="error">Can't reach the API. Start it with: uvicorn api.main:app --port 8000</p>`;
+  }
+}
+init();
+</script>
+</body>
+</html>
