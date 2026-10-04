@@ -1,0 +1,3 @@
+# Risks reviewed and deliberately accepted. One risk id per line, copied from the scanner output.
+# Content Specialist band is published in job postings (pay transparency); approved by HR.
+duplicate:11 lakh:Compensation Register 2026 > Marketing salaries
