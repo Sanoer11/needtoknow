@@ -8,21 +8,22 @@ jobs:
       postgres:
         image: pgvector/pgvector:pg16
         env:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
+          POSTGRES_USER: permit
+          POSTGRES_PASSWORD: permit
           POSTGRES_DB: needtoknow
         ports: ["5432:5432"]
         options: >-
           --health-cmd pg_isready
           --health-interval 10s --health-timeout 5s --health-retries 5
     env:
-      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/needtoknow
-      JWT_SECRET: ci-test-secret
+      JWT_SECRET: ci-test-secret-0123456789abcdef0123456789abcdef
+      HF_HUB_OFFLINE: "0"
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
-      - run: pytest -v
+      - run: python scripts/load_db.py
+      - run: python -m pytest -v
