@@ -4,7 +4,7 @@ import psycopg
 from pgvector.psycopg import register_vector                     # NEW
 from sentence_transformers import SentenceTransformer            # NEW
 
-DB_URL = "postgresql://permit:permit@localhost:5432/needtoknow"
+from config import DB_URL
 
 company = json.load(open("data/company.json"))
 model = SentenceTransformer("BAAI/bge-small-en-v1.5")            # NEW

@@ -4,7 +4,7 @@ import psycopg
 from pgvector.psycopg import register_vector
 from sentence_transformers import SentenceTransformer
 
-DB_URL = "postgresql://permit:permit@localhost:5432/needtoknow"
+from config import DB_URL
 model = SentenceTransformer("BAAI/bge-small-en-v1.5")
 QUERY_PREFIX = "Represent this sentence for searching relevant passages: "
 

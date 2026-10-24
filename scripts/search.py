@@ -4,7 +4,7 @@ import psycopg
 from pgvector.psycopg import register_vector
 from sentence_transformers import SentenceTransformer
 
-DB_URL = "postgresql://permit:permit@localhost:5432/needtoknow"
+from config import DB_URL
 model = SentenceTransformer("BAAI/bge-small-en-v1.5")
 
 # bge works better when questions start with this instruction (documents don't need it)
