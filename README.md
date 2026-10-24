@@ -1,6 +1,6 @@
 # NeedToKnow
 
-   ![CI](https://github.com/Sanoer11/needtoknow/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/Sanoer11/needtoknow/actions/workflows/ci.yml/badge.svg)
 
 **Permission-aware RAG for company knowledge.** Ask once — each employee gets an answer built *only* from the documents they're allowed to open, and every answer is checked before it's shown.
 
